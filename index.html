@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Lite OTT/IPTV Player</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <!--meta http-equiv="Cache-Control" content="no-cache, no-store, max-age=0, must-revalidate" /-->
+  <!--meta http-equiv="Pragma" content="no-cache" /-->
+  <!--meta http-equiv="Expires" content="0" /-->
+  <meta name="application-name" content="Lite OTT/IPTV Web Player">
+  <meta name="description" content="Free OTT/IPTV Web Player for Smart TV">
+  <meta name="keywords" content="IPTV OTT Player m3u">  
+  <meta name="author" content="github.com/xlaevmix">
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <script>
+    const utilscript = document.createElement('script');
+    utilscript.src = 'js/util.js?' + Math.random();
+    document.head.appendChild(utilscript);
+
+    const m3uscript = document.createElement('script');
+    m3uscript.src = 'js/m3u.js?' + Math.random();
+    document.head.appendChild(m3uscript);
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'css/style.css?' + Math.random();
+    document.head.appendChild(link);
+  </script>
+</head>
+
+<!--body onload="init()"-->
+<body>
+    <div class="spinner-overlay" id="spinner">
+      <img src="img/loading.gif" class="spinner"><br/>
+      <span id="statusText" style="text-align: center;"></span>
+    </div>
+    <video id="videoPlayer" type="application/vnd.apple.mpegurl" preload="none"></video>
+
+    <div class="ch-num" id="chNum"></div>
+
+    <div class="statusbar" id="statusbar"></div>
+
+    <div id="infobar">
+      <div class="infodescr" id="infodescr"></div>
+      <div class="infobar">
+        <div class="inforow" style="font-size: inherit;">
+          <span id="infoname">channel</span>
+        </div>
+        <div class="inforow">
+          <span id="infochnum" style="width: 20%;"></span>
+          <span id="infocurrent" style="width: 60%;"></span>
+          <span id="infoquality" style="width: 20%"></span>
+        </div>
+        <img id="infologo" src="img/dummy.png"></img>
+        <div class="inforow">
+          <span style="width: 20%;"></span>
+          <progress id="infoprogress" max="100" value="0"></progress>
+          <span style="width: 20%"></span>
+        </div>
+        <div class="inforow">
+          <span style="width: 20%;"></span>
+          <span id="infonext" style="width: 60%;"></span>
+          <span style="width: 20%"></span>
+        </div>
+      </div>      
+    </div>
+
+    <div class="menu-wrapper" id="epglist">
+      <div class="menu-header" id="epgListHeader">
+        <span data-i18n="tvguide">TV Guide Channel:</span><span></span>
+      </div>
+      <div class="menu-container" id="epgContainer">
+        <!-- epg will be generated dynamically here -->
+      </div>
+      <div class="menu-footer" id="epgListFooter">
+        <span><< <span data-i18n="channels">Channels</span></span><span></span>
+      </div>
+    </div>
+
+    <div class="menu-wrapper" id="channellist">
+      <div class="menu-header" id="channelListHeader">
+        <span>&nbsp;</span>
+      </div>
+      <div class="menu-container" id="channelsContainer">
+        <!-- Channels will be generated dynamically here -->
+      </div>
+      <div class="menu-footer" id="channelListFooter">
+        <span><< <span data-i18n="groups">Groups</span></span>
+        <span><span data-i18n="epg">EPG</span> >></span>
+      </div>
+    </div>
+
+    <div class="menu-wrapper" id="grouplist">
+      <div class="menu-header" id="groupsListHeader">
+        <span>&nbsp;</span>
+      </div>
+      <div class="menu-container" id="groupsContainer">
+        <!-- Groups will be generated dynamically here -->
+      </div>
+      <div class="menu-footer" id="groupsListFooter">
+        <span><< <span data-i18n="settings">Settings</span></span>
+        <span><span data-i18n="channels">Channels</span> >></span>
+      </div>
+    </div>
+
+    <div class="menu-wrapper" id="settingslist">      
+      <div class="menu-header" id="settingsHeader">
+        <span data-i18n="settings">Settings</span>
+      </div>
+      <div class="menu-container" id="settingsContainer">        
+        <div style="display: inline; top:0; position: relative; width: 80%;">
+          <span data-i18n="hint">Use OK/Enter to change value, arrow keys for navigation</span>:<span style="color: #FF0;"> &darr;&larr;&uarr;&rarr;</span>  
+          <p></p> 
+          <div style="padding: 10px; border: 1px solid #FFF">      
+          <div class="row">
+            <span class="left" data-i18n="lang">Language: </span>
+            <input type="text" class="input" id="language" value="en" readonly />
+          </div>
+          <div class="row">
+            <span class="left" data-i18n="rowscount">number of lines in menu lists: </span>
+            <input type="text" class="input" id="rowscount" value="15" readonly />
+          </div>
+          <div class="row">
+            <span class="left" data-i18n="playerType">player type: </span>
+            <input type="text" class="input" id="playerType" style="width: 200px;" value="native" readonly />
+          </div>
+          <div class="row">
+            <span class="left" data-i18n="playAtStart">play last channel on startup: </span>
+            <input type="checkbox" class="input left" name="playAtStart" id="playAtStart"
+              style="width: calc(3vh + 10px); height: calc(3vh + 10px); margin:0;" />
+          </div>
+          <div class="row">
+            <span class="left" data-i18n="m3uUrl">playlist address: </span>
+            <input type="text" class="input" id="m3uUrl" style="width: 70%; text-align: start;">
+          </div>
+          </div>
+          <br />
+          <div style="padding: 10px; border: 1px solid #FFF">
+          <div class="row">
+            <span class="left" data-i18n="epgsource">Source of EPG: </span> 
+            <span style="padding-left: 20px;">       
+              <input type="radio" class="input" style="transform: scale(2);" name="epgsource" value="none" checked>&nbsp;&nbsp;none
+            </span>
+            <span style="padding-left: 20px;">       
+              <input type="radio" class="input" style="transform: scale(2);" name="epgsource" value="server">&nbsp;&nbsp;server
+            </span>
+            <span style="padding-left: 20px;">
+              <input type="radio" class="input" style="transform: scale(2);" name="epgsource" value="xmltv">&nbsp;&nbsp;xmltv  
+            </span>                 
+          </div>
+          <label for="xmltvUrl" data-i18n="epgsourceDescr" style="color: yellow; font-size: 0.7em;text-align: start; ">
+                (Do not use large file unless your device has enough memory and disk space)
+              </label>
+          <div class="row" id="srcxml">
+            <span class="left" data-i18n="xmltvUrl">EPG address in XMLTV format: </span>
+            <input type="text" class="input" id="xmltvUrl" style="width: 70%; text-align: start;" placeholder="https://cdn.epg.one/epg2.xml.gz">          
+          </div>    
+          <div class="row">
+            <span class="left" data-i18n="keepEpgArchive">keep EPG archive: </span>
+            <input type="checkbox" class="input left" name="keepEpgArchive" id="keepEpgArchive"
+              style="width: calc(3vh + 10px); height: calc(3vh + 10px); margin:0;" />
+          </div> 
+          <div class="row">
+            <span class="left" data-i18n="keepEpgDescr">keep EPG descriptions: </span>
+            <input type="checkbox" class="input left" name="keepEpgDescr" id="keepEpgDescr"
+              style="width: calc(3vh + 10px); height: calc(3vh + 10px); margin:0;" />
+          </div>
+          </div>
+          <br />
+          <div style="padding: 10px; border: 1px solid #FFF">
+          <span style="text-decoration: underline;" data-i18n="keyBindings">Button bindings (OK/Enter - clear)</span>
+          <div class="row">
+            <span class="left" data-i18n="redbutton">RED (settings): </span>
+            <input type="text" class="input remotekey" id="RED" style="background: red; color: #000;" value=""
+              readonly />
+          </div>
+          <div class="row">
+            <span class="left" data-i18n="greenbutton">GREEN (epg): </span>
+            <input type="text" class="input remotekey" id="GREEN" style="background: green; color: #000;" value=""
+              readonly />
+          </div>
+          <div class="row">
+            <span class="left" data-i18n="yellowbutton">YELLOW (audio track): </span>
+            <input type="text" class="input remotekey" id="YELLOW" style="background: yellow; color: #000;" value=""
+              readonly />
+          </div>
+          <div class="row">
+            <span class="left" data-i18n="bluebutton">BLUE (info): </span>
+            <input type="text" class="input remotekey" id="BLUE" style="background: blue; color: #000;" value=""
+              readonly />
+          </div>
+          </div>
+          <br />
+          <div style="padding: 10px; border: 1px solid #FFF">
+          <span style="text-decoration: underline;" data-i18n="add-keyBindings">Additional button bindings (OK/Enter -
+            clear)</span>
+          <div class="row">
+            <span class="left">PageUp: </span>
+            <input type="text" class="input remotekey" id="CH_UP" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">PageDown: </span>
+            <input type="text" class="input remotekey" id="CH_DOWN" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">PRECH (recall): </span>
+            <input type="text" class="input remotekey" id="PRE_CH" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">EPG: </span>
+            <input type="text" class="input remotekey" id="EPG" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">INFO: </span>
+            <input type="text" class="input remotekey" id="INFO" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">PLAY: </span>
+            <input type="text" class="input remotekey" id="PLAY" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">STOP: </span>
+            <input type="text" class="input remotekey" id="STOP" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">PAUSE: </span>
+            <input type="text" class="input remotekey" id="PAUSE" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">REWIND: </span>
+            <input type="text" class="input remotekey" id="REWIND" value="" readonly />
+          </div>
+          <div class="row">
+            <span class="left">FORWARD: </span>
+            <input type="text" class="input remotekey" id="FORWARD" value="" readonly />
+          </div>       
+          </div>   
+           <button class="input" data-i18n="buttonOKUpd" style="width: 20vw;" onclick="saveSettings()">ОК / Update</button>
+          <br/>
+        </div>              
+      </div>
+      <div class="menu-footer" id="settingsFooter">
+        <span><< <span data-i18n="log">Log</span></span>        
+        <span><span data-i18n="groups">Groups</span> >></span>
+      </div>
+    </div>
+    <div class="menu-wrapper" id="loglist">      
+      <div class="menu-header" id="logHeader">
+        <span style="color: #FF0;">Source code: <a href="https://github.com/xlaevmix/lite-ott" style="color: #FF0;">https://github.com/xlaevmix/lite-ott</a></span>
+      </div>
+      <img style="position: absolute; left:0; top: 50px;" height="100px" width="100px" src="img/logo.png">
+      <div class="menu-container" id="logContainer">
+        <!-- log messages will be added dynamically here -->
+      </div>
+      <div class="menu-footer" id="logFooter">
+        <span></span><span><span data-i18n="settings">Settings</span> >></span>
+      </div>
+    </div>
+    <div class="menu-wrapper" id="modalexit">
+      <div class="modal-content">
+        <div style="background-color: #035; border: 1px solid #fff;">
+          <p data-i18n="exitConfirm">Exit Application?</p>
+          <div>
+            <button class="input" id="confirmBtn" onclick="exitApp(); return false;" style="width: 10vw;" data-i18n="yes">OK</button>
+            <button class="input" id="cancelBtn" onclick="toggleMenu(0); return false;" style="width: 10vw; background-color: #f69;" data-i18n="no">NO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <script>    
+    window.addEventListener('load', () => {
+      init();
+    });    
+
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+
+    function logToDiv(message, color) {
+      const logDiv = document.getElementById('logContainer');
+      const entry = document.createElement('div');
+      entry.style.color = color;
+      entry.textContent = `[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${message}`;
+      logDiv.appendChild(entry);
+    }
+
+    function ConsoleInterceptor(color, origFn) {
+      return function (...args) {
+        const message = args.map(arg =>
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        logToDiv(message, color);
+        origFn.apply(console, args);
+      };
+    }
+    const ConsoleLog = console.log;
+    const ConsoleWarn = console.warn;
+    const ConsoleError = console.error;
+
+    console.log = ConsoleInterceptor("white", ConsoleLog);
+    console.warn = ConsoleInterceptor("yellow", ConsoleWarn);
+    console.error = ConsoleInterceptor("red", ConsoleError);
+
+    const epgscript = document.createElement('script');
+    epgscript.src = 'js/epg.js?' + Math.random();
+    document.body.appendChild(epgscript);
+
+    const mainscript = document.createElement('script');
+    mainscript.src = 'js/main.js?' + Math.random();
+    document.body.appendChild(mainscript);
+  </script>
+</body>
+<!--[Copyright &copy; 2025 https://github.com/xlaevmix]-->
+</html>
