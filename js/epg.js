@@ -129,8 +129,8 @@ async function getXmlEPG(xmlUrl) {
   statusbar.style.display = 'block';
   statusbar.textContent = "Start parsing EPG data..";
 
-  const workerPath = 'js/xmlworker.js?' + Math.random();
-  worker = new Worker(workerPath);
+  const blob = new Blob([window.workerCode], { type: 'application/javascript' });
+  worker = new Worker(URL.createObjectURL(blob));
   const allchannels = [...new Set(playlist.map(channel => channel.name))];
 
   return new Promise((resolve, reject) => {
@@ -379,5 +379,6 @@ function getChannelEpgJson(channelIDorName, dateYMD) {
     }
   });
 }
+
 
 
