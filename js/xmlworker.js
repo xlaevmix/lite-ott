@@ -1,6 +1,7 @@
 /* Lite OTT/IPTV Web Player */
 /*  XMLTV worker script */
 
+window.workerCode = `  
 importScripts('https://unpkg.com/sax');
 importScripts('https://unpkg.com/pako@2.1.0/dist/pako_inflate.min.js');
 
@@ -16,11 +17,11 @@ function parseDate(dateStr) { //"YYYYMMDDhhmmss +hhmm"
   let isoString;
   if (tzMatch) {
     const tz = tzMatch[1];
-    const formattedTz = `${tz.slice(0, 3)}:${tz.slice(3)}`;
-    isoString = `${year}-${(month + 1).toString().padStart(2, '0')}-${day}T${hour}:${minute}:${second}${formattedTz}`;
+    const formattedTz = ` + "`${tz.slice(0, 3)}:${tz.slice(3)}`" + `;
+    isoString = ` + "`${year}-${(month + 1).toString().padStart(2, '0')}-${day}T${hour}:${minute}:${second}${formattedTz}`" + `;
   } else {
     // No timezone found → assume UTC
-    isoString = `${year}-${(month + 1).toString().padStart(2, '0')}-${day}T${hour}:${minute}:${second}Z`;
+    isoString = ` + "`${year}-${(month + 1).toString().padStart(2, '0')}-${day}T${hour}:${minute}:${second}Z`" + `;
   }
   return new Date(isoString);
 }
@@ -36,7 +37,7 @@ const tstoday = toTimestamp(today);
 
 async function fetchXML(url) {
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to fetch ${url}`);
+  if (!response.ok) throw new Error(` + "`Failed to fetch ${url}`" + `);
   return await response.arrayBuffer();
 }
 
@@ -76,7 +77,7 @@ async function streamUnGzipAndParse(compressedData, parser) {
       }
       parser.close();
     } catch (err) {
-      self.postMessage({ status: 'error', message: `GZIP decompression failed: ${err.message}` });
+      self.postMessage({ status: 'error', message: ` + "`GZIP decompression failed: ${err.message}`" + `});
     }
   } else {
     PakoInflateAndParse(compressedData, parser);
@@ -111,7 +112,7 @@ self.onmessage = function (e) {
     const tx = db.transaction('metadata', 'readwrite');
     const metadataStore = tx.objectStore('metadata');
     await metadataStore.put({ key: 'dbTimestamp', timestamp: maxStartTime });
-    self.postMessage({ status: 'done', message: `Stored ${totalChannels} channels and ${totalProgrammes} programmes.` });    
+    self.postMessage({ status: 'done', message: ` + "`Stored ${totalChannels} channels and ${totalProgrammes} programmes.`" + `});    
   }
 
 
@@ -125,7 +126,7 @@ self.onmessage = function (e) {
       putPromises.push(new Promise((resolve, reject) => {
         const request = store.put(pendingEPG[chId]);
         request.onsuccess = () => resolve();
-        request.onerror = () => reject(`Failed to store channel: ${chId}`);
+        request.onerror = () => reject(` + "`Failed to store channel: ${chId}`" + `);
       }));
     }
 
@@ -210,7 +211,7 @@ self.onmessage = function (e) {
             totalChannels++;
             notifyChCount++;
             if (notifyChCount >= 100) {
-              self.postMessage({ status: 'info', message: `Parsing channels: ${totalChannels} total` });
+              self.postMessage({ status: 'info', message: ` + "`Parsing channels: ${totalChannels} total`" + `});
               notifyChCount = 0;
             }
           }
@@ -263,7 +264,7 @@ self.onmessage = function (e) {
           if (bufferedCount >= 100) {
             flushPending = true;
             if (notifyCount >= 1000) {
-              self.postMessage({ status: 'info', message: `Parsing programmes: ${totalProgrammes} total` });
+              self.postMessage({ status: 'info', message: ` + "`Parsing programmes: ${totalProgrammes} total`" + `});
               notifyCount = 0;
             }
           }
@@ -328,3 +329,4 @@ self.onmessage = function (e) {
     self.postMessage({ status: 'error', message: 'Failed to open IndexedDB' });
   };
 };
+`;
