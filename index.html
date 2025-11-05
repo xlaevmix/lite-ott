@@ -307,6 +307,10 @@
     console.warn = ConsoleInterceptor("yellow", ConsoleWarn);
     console.error = ConsoleInterceptor("red", ConsoleError);
 
+    const xmlworkerscript = document.createElement('script');
+    xmlworkerscript.src = 'js/xmlworker.js?' + Math.random();
+    document.body.appendChild(xmlworkerscript);
+
     const epgscript = document.createElement('script');
     epgscript.src = 'js/epg.js?' + Math.random();
     document.body.appendChild(epgscript);
