@@ -7,23 +7,22 @@ importScripts('https://unpkg.com/pako@2.1.0/dist/pako_inflate.min.js');
 
 function parseDate(dateStr) { //"YYYYMMDDhhmmss +hhmm"
   dateStr = dateStr.trim();
-  const year = dateStr.substring(0, 4);
-  const month = parseInt(dateStr.substring(4, 6)) - 1;
-  const day = dateStr.substring(6, 8);
-  const hour = dateStr.substring(8, 10);
-  const minute = dateStr.substring(10, 12);
-  const second = dateStr.substring(12, 14);
-  const tzMatch = dateStr.substring(14).match(/([+-]\d{4})$/);
-  let isoString;
-  if (tzMatch) {
-    const tz = tzMatch[1];
-    const formattedTz = ` + "`${tz.slice(0, 3)}:${tz.slice(3)}`" + `;
-    isoString = ` + "`${year}-${(month + 1).toString().padStart(2, '0')}-${day}T${hour}:${minute}:${second}${formattedTz}`" + `;
-  } else {
-    // No timezone found → assume UTC
-    isoString = ` + "`${year}-${(month + 1).toString().padStart(2, '0')}-${day}T${hour}:${minute}:${second}Z`" + `;
-  }
-  return new Date(isoString);
+  const year = parseInt(dateStr.substring(0, 4));
+    const month = parseInt(dateStr.substring(4, 6)) - 1; // Month is 0-indexed
+    const day = parseInt(dateStr.substring(6, 8));
+    const hour = parseInt(dateStr.substring(8, 10));
+    const minute = parseInt(dateStr.substring(10, 12));
+    const second = parseInt(dateStr.substring(12, 14));
+    const timezoneOffset = dateStr.substring(15);
+
+    const date = new Date(Date.UTC(year, month, day, hour, minute, second));
+
+    const offsetHours = parseInt(timezoneOffset.substring(0, 3));
+    const offsetMinutes = parseInt(timezoneOffset.substring(3, 5));
+    date.setUTCHours(date.getUTCHours() - offsetHours);
+    date.setUTCMinutes(date.getUTCMinutes() - offsetMinutes);
+
+    return date;  
 }
 
 
@@ -330,3 +329,4 @@ self.onmessage = function (e) {
   };
 };
 `;
+
