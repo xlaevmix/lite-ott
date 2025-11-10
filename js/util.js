@@ -38,14 +38,15 @@ function parseDate(dateStr) { //"YYYYMMDDhhmmss +hhmm"
     const hour = parseInt(dateStr.substring(8, 10));
     const minute = parseInt(dateStr.substring(10, 12));
     const second = parseInt(dateStr.substring(12, 14));
-    const timezoneOffset = dateStr.substring(15);
+    const timezoneOffset = dateStr.substring(15).trim();
 
     const date = new Date(Date.UTC(year, month, day, hour, minute, second));
-    
-    const offsetHours = parseInt(timezoneOffset.substring(0, 3));
+  
+    const sign = timezoneOffset[0] === '-' ? -1 : 1;
+    const offsetHours = parseInt(timezoneOffset.substring(1, 3));
     const offsetMinutes = parseInt(timezoneOffset.substring(3, 5));
-    date.setUTCHours(date.getUTCHours() - offsetHours);
-    date.setUTCMinutes(date.getUTCMinutes() - offsetMinutes);
+    const totalOffsetMinutes = sign * (offsetHours * 60 + offsetMinutes);
+    date.setUTCMinutes(date.getUTCMinutes() - totalOffsetMinutes);
 
     return date;  
 }
@@ -127,3 +128,4 @@ async function getJson(url) {
   }
 
 }
+
