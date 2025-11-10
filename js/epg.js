@@ -340,12 +340,12 @@ function getChannelEpgDB(channelIDorName, dateYMD) {
           reject('No events found');
         }
 
-        const year = parseInt(dateYMD.slice(0, 4), 10);
-        const month = parseInt(dateYMD.slice(4, 6), 10) - 1;
-        const day = parseInt(dateYMD.slice(6, 8), 10);
+        const datestart = DateFromUtcYMD(dateYMD);
+        const dateend = DateFromUtcYMD(dateYMD);
+        dateend.setUTCDate(dateend.getUTCDate() + 1);
 
-        const dayStart = toTimestamp(new Date(year, month, day));
-        const dayEnd = toTimestamp(new Date(year, month, day + 1));
+        const dayStart = toTimestamp(datestart);
+        const dayEnd = toTimestamp(dateend);
 
         const filteredEvents = result.events.filter(event => {
           const start = Number(event.start);
@@ -379,6 +379,7 @@ function getChannelEpgJson(channelIDorName, dateYMD) {
     }
   });
 }
+
 
 
 
