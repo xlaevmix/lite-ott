@@ -28,6 +28,45 @@ https://xlaevmix.github.io/lite-ott/
 ## Screenshots
 You can see in "Screenshots" folder of repository.
 
+## Usage and navigation
+1) on settings page fill necessary fields (playlist url, optional: epg url, optional: key bindings by pressing specified key on selected field)
+   navigate by arrows
+2) press OK/Update button on bottom of settings page (this will save your playlist url and settings in browser's Local storage and reload window to init app again with saved settings)
+   Once the settings and playlist are saved, they will be loaded from the browser's Local storage every time you visit the application page.   
+3) App initialization:
+   - Loading playlist from browser's Local storage or given URL if there is no parsed playlist yet:
+       App loads playlist from url, parses and saves to browser's Local storage only once after new settings saved, if you want to update playlist just press OK/Update button on settings page.
+   - Loading EPG (xmltv):
+       App loads EPG (xmltv) in separate thread using browser's web-worker to not blocking UI, parse and save to browser's Indexed database.
+       EPG loaded every time when there is no EPG yet, or it is outdated (last event date is less than today).
+       If you need to reload EPG manually just press OK/Update button on settings page.
+   - If playlist is new and loaded from url, or new EPG loaded: Processing EPG to match epg channels against playlist channels by channel name, assign tvg-id, picons, etc.
+4) Ready to use.
+   ### Navigation:
+   #### when channel stream is playing:
+      - arrows Up/Down or buttons PageUp/PageDown switches Next/Previous channel
+      - OK/Enter shows semi-transparent menu with channels list of current group
+      - Esc/Backspace shows "Exit application" dialog
+      - PRECH switches to previously playing channel and back even from other group
+      - RED show settings
+      - GREEN show EPG of current playing channel
+      - YELLOW show audiotrack/subtitle switcher (not implemented yet)
+      - BLUE show infobar with info of current playing channel, second press show description of current programme
+   #### when menu is shown:
+      - Esc/Backspace closes menu
+      - arrows Left/Right navigates through menu pages
+      - on Groups page:          
+          - arrows Up/Down select group
+          - buttons PageDown/PageUp scrolls to Next/Previous page (skip lines defined by number of rows in settings) and select group
+          - OK/Enter or arrow "Right" - click on selected item - enter group
+      - on Channels page:
+          - arrows Up/Down select channel
+          - buttons PageDown/PageUp scrolls to Next/Previous page (skip lines defined by number of rows in settings) and select channel
+          - arrow "Right" show TV Guide of selected channel
+          - OK/Enter play selected channel (same on TV Guide page to play archived programme)
+    
+    Player controls (PLAY/STOP/PAUSE/REWIND/FORWARD) available only when archived programme is playing.
+   
 ## Usage of json-api as EPG source
 1) You need a script on a web server which accepts requests with params:
 - mode: [now , day], 
@@ -83,3 +122,5 @@ Undefined parameters will be removed automatically when app parse url for sendin
 
 Contributions are always welcome!
 
+## Sponsor me
+BTC: bc1qnum44a9pa77up40hjswkzzm66crfjvruep43hh
