@@ -23,7 +23,7 @@ Lite OTT/IPTV WEB Player is a web-based IPTV streaming application for Smart TVs
 
 
 ## Demo
-https://xlaevmix.github.io/lite-ott/
+http://lite-ott.surge.sh/ (use http:// instead of https:// if your playlist url or stream source is insecure plain http)
 
 ## Screenshots
 You can see in "Screenshots" folder of repository.
