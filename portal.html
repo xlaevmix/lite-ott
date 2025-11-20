@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Media Portal</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+        body {
+            height: 100%;
+            margin: 0px;
+            display: flex;
+            background-color: #112233;
+            background-position: center;
+        }
+        #container {
+            margin: auto;
+            padding: 0px 20px;
+        }
+        .Panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
+            max-width: 840px;
+        }
+        #Icons {
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+        .tile {
+            padding: 10px;
+            margin: 10px;
+            background-color: #e5e6e4;
+            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.75);
+            transition: box-shadow 0.2s ease-in-out;
+        }
+        .tile:focus {
+            box-shadow: 0px 0px 10px 3px #00d2ff;
+        }
+        .icon img {
+            width: 128px;
+            height: 128px;
+        }
+        .wrapper-promo {
+            display: block;
+            border: 0px;
+            text-decoration: none;
+        }
+        .wrapper-promo:focus {
+            box-shadow: 0px 0px 10px 3px #00d2ff;
+            transform: scale(1.1);
+        }
+    </style>
+  </head>
+  <body>
+    
+    <div id="container"><div id="caption" style="width: 100%; text-align: center; font-size: 5vh; color: white;"> </div><br/>
+        <div class="Panel" id="Icons">
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="http://lite-ott.surge.sh/" tabindex="0">
+                <div class="tile icon"><img src="img/lite-ott.png" alt="IPTV/OTT Player"></div>
+            </a>
+	          <a class="wrapper-promo" onfocus="updateInfo(this)" href="http://widget.ottplayer.tv" tabindex="0">
+                <div class="tile icon"><img src="img/ottplayer.png" alt="OttPlayer.tv"></div>
+            </a>
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="http://bylampa.online" tabindex="0">
+                <div class="tile icon"><img src="img/bylampa.png" alt="Lampa Uncensored"></div>
+            </a>
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="http://prisma.ws" tabindex="0">
+                <div class="tile icon"><img src="img/prisma.png" alt="Prisma"></div>
+            </a>
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="http://lite.lampa.mx/" tabindex="0">
+                <div class="tile icon"><img src="img/lampalite.png" alt="Lampa Lite"></div>
+            </a>
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="http://msx.benzac.de" tabindex="0">
+                <div class="tile icon"><img src="img/msx.png" alt="Media Station X"></div>
+            </a>
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="http://drm-play.com" tabindex="0">
+                <div class="tile icon"><img src="img/drmplay.png" alt="DRM Play"></div>
+            </a>
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="https://megogo.net/ua/" tabindex="0">
+                <div class="tile icon"><img src="img/megogo.png" alt="MeGoGo"></div>
+            </a>
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="https://smart.sweet.tv" tabindex="0">
+                <div class="tile icon"><img src="img/sweet-tv.png" alt="Sweet TV"></div>
+            </a>
+            <a class="wrapper-promo" onfocus="updateInfo(this)" href="http://app.xsmart.tv" tabindex="0">
+                <div class="tile icon"><img src="img/xsmart.png" alt="XSmart TV"></div>
+            </a>            
+        </div>
+    </div>
+    <script type="text/javascript">
+        const links = Array.from(document.querySelectorAll('a'));
+        let currentIndex = 0;
+        links[currentIndex].focus();
+
+        function updateInfo(el) {
+            const info = document.getElementById('caption');
+            info.textContent = el.querySelector('img').getAttribute("alt")
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                currentIndex = (currentIndex + 1) % links.length;
+                links[currentIndex].focus();
+
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                currentIndex = (currentIndex - 1 + links.length) % links.length;
+                links[currentIndex].focus();
+                
+            }
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                currentIndex = (currentIndex + 5) % links.length;
+                links[currentIndex].focus();
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                currentIndex = (currentIndex - 5 + links.length) % links.length;
+                links[currentIndex].focus();
+            }
+            if (e.key === "Enter") {
+                e.preventDefault();
+                links[currentIndex].click();
+            }
+            if (e.key === "Escape" || e.key === "Backspace" || e.code === 8) {
+              //if (confirm("Exit application?")) {
+                window.close();
+              //}
+            }
+        });
+    </script>
+  </body>
+</html>
