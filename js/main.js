@@ -377,7 +377,12 @@ async function loadEPG() {
         }
         getXmlEPG(epglink)
           .then(() => {
-            setChannelsTvgIds();
+            if (isNewPlaylist) {
+              setChannelsTvgIds();
+            } else {
+              cleanUpEpg();
+              epg_now();
+            }
           })
           .catch(error => {
             console.error("EPG parsing failed:", error);
