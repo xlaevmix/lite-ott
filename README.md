@@ -1,6 +1,6 @@
 # <img src="https://github.com/xlaevmix/lite-ott/blob/main/img/logo.png" width="100"> Lite OTT
 
-Lite OTT/IPTV WEB Player is a web-based IPTV streaming application for Smart TVs. Lite OTT supports .m3u or .m3u8 playlists loaded by url and xmltv-format for EPG (TV guide), keyboard or remote control for navigation.
+Lite OTT IPTV WEB Player is a web-based IPTV streaming application for Smart TVs. Lite OTT supports .m3u or .m3u8 playlists loaded via url and xmltv-format for EPG (TV guide), keyboard or remote control for navigation.
 
 
 ## Features
@@ -22,7 +22,7 @@ Lite OTT/IPTV WEB Player is a web-based IPTV streaming application for Smart TVs
 
 
 ## Demo
-http://lite-ott.surge.sh/ (use http:// instead of https:// if your playlist url or stream source is insecure plain http)
+http://lite-ott.top/iptv.html (use http:// instead of https:// if your playlist url or stream source is insecure plain http)
 
 ## Screenshots
 You can see in "Screenshots" folder of repository.
