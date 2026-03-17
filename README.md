@@ -38,7 +38,7 @@ You can see in "Screenshots" folder of repository.
    - Loading EPG (xmltv):
        App loads EPG (xmltv) in separate thread using browser's web-worker to not blocking UI, parse and save to browser's Indexed database.
        EPG loaded every time when there is no EPG yet, or it is outdated (last event date is less than today).
-       If you need to reload EPG manually just press OK/Update button on settings page.
+       If you need to reload EPG manually just press YELLOW button on channels page.
    - If playlist is new and loaded from url, or new EPG loaded: Processing EPG to match epg channels against playlist channels by channel name, assign tvg-id, picons, etc.
 4) Ready to use.
    ### Navigation:
@@ -63,6 +63,7 @@ You can see in "Screenshots" folder of repository.
           - buttons PageDown/PageUp scrolls to Next/Previous page (skip lines defined by number of rows in settings) and select channel
           - arrow "Right" show TV Guide of selected channel
           - OK/Enter play selected channel (same on TV Guide page to play archived programme)
+          - YELLOW button - force update EPG
     
     Player controls (PLAY/STOP/PAUSE/REWIND/FORWARD) available only when archived programme is playing.
    
