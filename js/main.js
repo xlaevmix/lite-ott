@@ -20,6 +20,7 @@ const translations = {
     "xmltvUrl": "EPG address in XMLTV format",
     "keepEpgDescr": "keep EPG descriptions",
     "keepEpgArchive": "keep EPG archive",
+    "forceEPGupdate": "update EPG",
     "rowscount": "number of lines in menu lists",
     "playerType": "player type",
     "playAtStart": "play last channel on startup",
@@ -49,6 +50,7 @@ const translations = {
     "xmltvUrl": "адреса EPG у форматі XMLTV",
     "keepEpgDescr": "зберігати опис телепрограм",
     "keepEpgArchive": "зберігати архів телепрограм",
+    "forceEPGupdate": "оновити телепрограму",
     "rowscount": "кількість рядків у списках меню",
     "playerType": "тип плеєра",
     "playAtStart": "програвати останній канал після старту",
@@ -78,6 +80,7 @@ const translations = {
     "xmltvUrl": "адрес EPG в формате XMLTV",
     "keepEpgDescr": "хранить описания телепрограмм",
     "keepEpgArchive": "хранить архив телепрограмм",
+    "forceEPGupdate": "обновить телепрограмму",
     "rowscount": "количество строк в списках меню",
     "playerType": "тип плеера",
     "playAtStart": "проигрывать последний канал при старте",
@@ -109,6 +112,7 @@ const groupsList = document.getElementById("grouplist");
 
 const channelsList = document.getElementById("channellist");
 const channelListHeader = document.getElementById("channelListHeader");
+const channelListTitle = document.getElementById("channelListTitle");
 const channelsContainer = document.getElementById("channelsContainer");
 
 const epglist = document.getElementById("epglist");
@@ -364,8 +368,9 @@ async function loadEPG() {
   console.log('Loading epg..');
   loadingstatus.textContent = "Loading TV guide..";
 
-  if (epgSource === "xmltv") {
+  if (epgSource === "xmltv") {    
     if (epglink != "" && epglink != null) {
+      if (worker && workerRunning) return;
       if (isNewPlaylist || await isEpgOutdated()) {
         if (isNewPlaylist) {
           try {
@@ -748,7 +753,7 @@ function groupsShow(show = true) {
 function channelsShow(show = true) {
   channelsList.style.display = show ? "block" : "none";
   if (show) {
-    channelListHeader.innerHTML = "<span>" + groups[currentGroupIndex].textContent + " [" + (currentChannelIndex + 1) + "/" + (channels.length) + "]</span>";
+    channelListTitle.innerHTML = groups[currentGroupIndex].textContent + " [" + (currentChannelIndex + 1) + "/" + (channels.length) + "]";
     channels[currentChannelIndex].classList.add("selected");
     cursorMove(channelsContainer, '.container-item', 1, 0, true);
     channels.forEach((channel, index) => {
@@ -1192,7 +1197,28 @@ document.addEventListener("keydown", function (e) {
           PrevCh(rowscount);
           cursorMove(channelsContainer, '.container-item', -1, rowscount, true);
         }
-        channelListHeader.innerHTML = "<span>" + groups[currentGroupIndex].textContent + " [" + (currentChannelIndex + 1) + "/" + (channels.length) + "]</span>";
+        if (e.keyCode === keys.YELLOW) {
+          e.preventDefault();
+          if (epgSource === "none") return;
+          if (epgSource === "xmltv") {
+            if (epglink != "" && epglink != null) {
+              if (worker && workerRunning) return;
+              console.log('Loading epg..');
+              getXmlEPG(epglink)
+                .then(() => {
+                  cleanUpEpg();
+                  epg_now();
+                })
+                .catch(error => {
+                  console.error("EPG parsing failed:", error);
+                }); 
+            } else {
+              return;
+            }
+          }          
+          return;
+        }
+        channelListTitle.innerHTML = groups[currentGroupIndex].textContent + " [" + (currentChannelIndex + 1) + "/" + (channels.length) + "]";
       }
       if (e.key === "ArrowLeft") {
         e.preventDefault();
