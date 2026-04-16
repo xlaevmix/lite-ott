@@ -69,7 +69,7 @@ function generateStreamUrl(template, epg = []) {
 
 async function get_data(data_url, mime) {
   try {
-    const response = await fetch(data_url, {
+    const response = await fetch(encodeURI(data_url), {
       headers: {
         'Accept': mime
       },
