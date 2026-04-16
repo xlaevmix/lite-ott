@@ -197,6 +197,8 @@ let prevChannelIndex = 0;
 let listItemHeight = "4vh";
 let chNumHideTimeout;
 let infoBarHideTimeout;
+let chNumInputBuffer = "";
+let chNumInputTimer = null;
 
 /* Functions */
 function exitApp() {
@@ -795,9 +797,13 @@ function epgShow(show = true) {
   }
 }
 
-function chNumShow(show = true) {
+function chNumShow(show = true, num = -1) {
   if (show) {
-    chNum.innerHTML = "<span>" + (currentChannelIndex + 1) + "</span>";
+    if (num > -1) {
+      chNum.innerHTML = "<span>" + (num + 1) + "</span>";
+    } else {
+      chNum.innerHTML = "<span>" + (currentChannelIndex + 1) + "</span>";
+    }
     chNum.style.display = 'block';
     clearTimeout(chNumHideTimeout);
     chNumHideTimeout = setTimeout(() => chNumShow(false), 5000);
@@ -1340,6 +1346,25 @@ document.addEventListener("keydown", function (e) {
           }
         }
         return;
+      }
+      //switch channel by number input     
+      if (/^\d$/.test(e.key)) {
+        e.preventDefault();
+        if (e.repeat) return;
+        chNumInputBuffer += e.key;
+        const num = parseInt(chNumInputBuffer, 10);
+        if (isNaN(num)) return;
+        const chIndex = num - 1;
+        if (chIndex === -1 || chIndex >= channels.length) return;
+        chNumShow(true, chIndex);
+        clearTimeout(chNumInputTimer);
+        chNumInputTimer = setTimeout(() => {
+          currentChannelIndex = chIndex;
+          playChannel();
+          chNumShow();
+          infobarShow();
+          chNumInputBuffer = "";
+        }, 2000);
       }
       if ((e.key === "ArrowDown" || e.key === "PageDown" || e.keyCode === keys.CH_DOWN) && channels.length > 0) {
         if (infodescr.style.display === 'none') {
