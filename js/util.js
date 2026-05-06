@@ -114,7 +114,7 @@ function parseApiUrl(template, params) {
   // 3. Clean up leftover ? or & at the end
   rawUrl = rawUrl.replace(/[?&]+$/, '').replace(/\?&/, '?');
 
-  return encodeURI(rawUrl);
+  return rawUrl;
 }
 
 
