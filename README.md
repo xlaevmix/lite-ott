@@ -68,14 +68,9 @@ You can see in "Screenshots" folder of repository.
     Player controls (PLAY/STOP/PAUSE/REWIND/FORWARD) available only when archived programme is playing.
    
 ## Usage of json-api as EPG source
-1) You need a script on a web server which accepts requests with params:
-- mode: [now , day], 
+1) You need a script on a web server which accepts requests with params: 
 - date: yyyymmdd, 
 - name: channel_name
-```comment
-mode=now - server should return only current and next event for given channel
-mode=day - server should return all events for given channel and date
-```
 and response json data in following format:
 ```json
 {
@@ -102,11 +97,13 @@ start/stop are timestamps.
 
 2) assign url of your api endpoint to variable "epgApi_Url" in main.js:
 ```javascript
-const epgApi_Url = 'http://example.com/epg/get_epg.php?mode=${mode}&date=${date}&name=${name}';
+const epgApiUrl_now = 'http://example.com/epg/get_epg.php?name=${name}';
+const epgApiUrl_day = 'http://example.com/epg/get_epg.php?date=${date}&name=${name}';
 ```
 or if json api and app on same domain:
 ```javascript
-const epgApi_Url = window.location.origin + '/${mode}/${date}/${name}';
+const epgApiUrl_now = window.location.origin + '/${name}';
+const epgApiUrl_day = window.location.origin + '/${date}/${name}';
 ```
 or other pattern with params ${mode}, ${date}, ${name}.
 
