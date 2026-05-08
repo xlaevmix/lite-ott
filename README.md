@@ -71,6 +71,7 @@ You can see in "Screenshots" folder of repository.
 1) You need a script on a web server which accepts requests with params: 
 - date: yyyymmdd, 
 - name: channel_name
+  
 and response json data in following format:
 ```json
 {
